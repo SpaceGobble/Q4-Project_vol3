@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html><head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-8175315-14"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-8175315-14');
+</script>
+  <meta charset="utf-8">
+  <title>Ramp</title>
+<style type="text/css" id="operaUserStyle"></style><style type="text/css"></style></head>
+
+<body style="font-family:sans-serif; font-size:15px; width:1024px; margin-left:auto; margin-right:auto;">
+    <canvas id="myCanvas" width="1024" height="440"></canvas>
+<center>
+    <div id="buttons">
+      <input type="button" id="play" value="Play" onclick="play()">
+      <input type="button" id="pause" value="Pause" onclick="pause()">
+      <input type="button" id="stepback" value="<< Step" onclick="stepBack()">
+      <input type="button" id="stepforward" value="Step >>" onclick="stepForward()">
+      <input type="button" id="reset" value="Reset" onclick="reset()">
+    </div>
+<br>
+         <div>Coefficient of kinetic friction</div>
+     <div id="slider1">
+      0.0 <input type="range" id="currentmuValue" min="0" max="0.1" value="0" step="0.01" oninput="showmu(this.value)" onchange="showmu(this.value)"> 0.10
+<div id="initialmuValue">0</div>
+    </div>
+
+</center>
+
+  <script>
+
+// Simulation first posted on 6-4-2016, written by Andrew Duffy
+
+      function hAxis(newAxis)
+      {
+         graphType = newAxis;
+         if (graphType == 2) {
+           graphTitle = 'Energy vs. position';
+           xAxisTitle = 'x (cm)';
+           xIncrement = 20;
+           xNumDecimals = 0;
+         }
+         else {
+           graphTitle = 'Energy vs. time';
+           xAxisTitle = 't (s)';
+           xIncrement = 0.2;
+           xNumDecimals = 1;
+         }
+         reset();
+     }
+
+      function showmu(newmu)
+      {
+             //get the element
+             var display = document.getElementById("initialmuValue");
+             //show the amount
+             display.innerHTML=newmu;
+             mu = Number(newmu);
+             reset();
+     }
+
+
+      function play() {
+        window.clearTimeout(timer);
+        runFlag = 1;
+        runMotion();
+
+      }
+
+      function pause() {
+        window.clearTimeout(timer);
+        runFlag = 0;
+
+      }
+
+      function stepForward() {
+        window.clearTimeout(timer);
+        runFlag = 1;
+        drawMotion();
+
+      }
+
+      function stepBack() {
+        window.clearTimeout(timer);
+        index = index-2;
+        if (index < -1) index = -1;
+        time = index/200;
+//        xPos = xBase;
+        runFlag = 1;
+        drawMotion();
+
+      }
+
+
+      function reset() {
+        window.clearTimeout(timer);
+        index = -1;
+        time = 0.0;
+        hyp1 = Math.sqrt(H1*H1 + B1*B1);
+        a1 = g*H1/hyp1;
+        anet = a1-(mu*g*B1/hyp1);
+        rampTime1 = Math.sqrt(2*hyp1/anet);
+        if (rampTime1 <= 2.0) xIncrement3 = 0.25;
+        if (rampTime1 > 2.0) xIncrement3 = 0.4;
+        if (rampTime1 > 3.2) xIncrement3 = 0.5;
+        if (rampTime1 > 4.0) xIncrement3 = 0.6;
+        v1 = Math.sqrt(2*g*H1);
+        hyp2 = Math.sqrt(H2*H2 + B2*B2);
+        a2 = g*H2/hyp2;
+        rampTime2 = Math.sqrt(2*hyp2/a2);
+        v2 = Math.sqrt(2*g*H2);
+
+        runFlag = 1;
+        drawMotion();
+
+      }
+
+
+      var canvas = document.getElementById("myCanvas");
+      var context = canvas.getContext("2d");
+      var index = -1;
+
+      var xBase = 90;     // for the drawing
+      var xBase2 = 90;   // for the graph
+      var xBase3 = 640;   // for the time graph
+      var yBase = 320;     // for the drawing
+      var yBase2 = 70;    // for the graph
+      var xInit = 37;
+      var graphType = 2;
+      var graphTitle = 'Energy vs. position';
+      var graphTitle3 = 'Energy vs. time';
+      var yAxisTitle = 'Energy (J)';
+      var xAxisTitle = 'x (cm)';
+      var xAxisTitle3 = 't (s)';
+      var rampYAxisTitle = 'Height (cm)';
+      var rampXAxisTitle = 'Width (cm)';
+      var xIncrement = 20;
+      var xIncrement3 = 0.25;
+      var xNumDecimals = 0;
+      var xNumDecimals3 = 2;
+      var yIncrement = 2;
+      var yNumDecimals = 0;
+      var xAxisOffset = 0;
+      var graphYdraw = 2;
+      var xIncrementDraw = 20;
+      var yIncrementDraw = 20;
+      var xNumDecimalsDraw = 0;
+      var graphY = 4;
+      var graphX = 10;
+      var graphX3 = 8;
+      var yStart = yBase+120;
+      var plotColor = '#ff00ff';
+      var scenario = 1;
+      var H1 = 24;
+      var B1 = 200;
+      var H2 = 20;
+      var B2 = 60;
+      var g = 980;
+      var hyp1 = Math.sqrt(H1*H1 + B1*B1);
+      var d1;
+      var x1;
+      var y1;
+      var a1 = g*H1/hyp1;
+      var mu = 0;
+      var mass = 1.111;
+      var anet = a1-(mu*g*B1/hyp1);
+      var rampTime1 = Math.sqrt(2*hyp1/anet);
+      var speed = 0;
+      var v1 = Math.sqrt(2*g*H1);
+      var ePotential = 0;
+      var eKinetic = 0;
+      var eTotal = 0;
+      var eThermal = 0;
+      var hyp2 = Math.sqrt(H2*H2 + B2*B2);
+      var d2;
+      var x2;
+      var y2;
+      var a2 = g*H2/hyp2;
+      var rampTime2 = Math.sqrt(2*hyp2/a2);
+      var v2 = Math.sqrt(2*g*H2);
+      var radius = 8;
+      var time = 0.0;
+      var deltat = 1/20.0;
+      var timer;
+      var runFlag = 1;
+
+      reset();
+
+    function drawMotion() {
+
+  //    console.log("In the drawMotion function, with runFlag = " + runFlag );
+
+      if ((index >= 1000) || (time >= rampTime1)) runFlag = 0;
+
+  //    console.log("In the drawMotion function, with runFlag = " + runFlag + " Fx = " + Fx);
+
+      if (runFlag == 1) {    //      run if runFlag equal 1, not if equal 0
+        // clear
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        index = index + 1;
+
+        // set background color for the entire thing
+           context.fillStyle = "#ffd";
+           context.fillRect(0, 0, canvas.width, canvas.height);
+
+        // set background color for the graph
+           context.fillStyle = "#eff";
+           context.fillRect(xBase2, yBase2, 40*graphX, 40*graphY);
+
+           var axisLabel = '';
+           var axisValue = 0;
+
+        // set up the position  graph
+        drawAxes (xBase2, yBase2, graphX, graphY, xAxisOffset, xIncrement, yIncrement, xNumDecimals, yNumDecimals, xAxisTitle, yAxisTitle, graphTitle);
+
+        // set up the time graph
+        drawAxes (xBase3, yBase2, graphX3, graphY, xAxisOffset, xIncrement3, yIncrement, xNumDecimals3, yNumDecimals, xAxisTitle3, yAxisTitle, graphTitle3);
+
+
+        // set background color for the drawing
+           context.fillStyle = "#eff";
+           context.fillRect(xBase, yBase, 400, 80);
+
+
+           context.strokeStyle = '#000';
+           context.lineWidth = 1;
+
+
+        // set up the grid for the drawing
+        drawAxes (xBase, yBase, graphX, graphYdraw, xAxisOffset, xIncrementDraw, yIncrementDraw, xNumDecimalsDraw, yNumDecimals, rampXAxisTitle, rampYAxisTitle, " ");
+
+
+        // set line color
+           context.strokeStyle = '#999';
+           context.lineWidth = 2;
+
+        // draw ramp 1
+           context.strokeStyle = '#0a0';
+           context.lineWidth = 4;
+           context.beginPath();
+           context.moveTo(xBase, yBase+80-2*H1);
+           context.lineTo(xBase+2*B1, yBase+80);
+           context.lineTo(xBase+400, yBase+80);
+           context.stroke();
+
+
+           time = index/200.0;
+
+        // draw ball 1
+           context.strokeStyle = '#00f';
+           context.lineWidth = 2;
+           context.beginPath();
+           if (time < rampTime1) {
+             d1 = 0.5*anet*time*time;
+             speed = anet*time;
+             x1 = d1*B1/hyp1;
+             y1 = d1*H1/hyp1;
+           }
+           else {
+             x1 = B1+v1*(time - rampTime1);
+             speed = v1;
+             if (x1 > 200) x1 = 200;
+             y1 = H1;
+           }
+           ePotential = mass*g*(H1-y1)*12/39200;
+           eKinetic = 0.5*mass*speed*speed*12/39200;
+//           console.log("Energies: PE " + ePotential + " KE = " + eKinetic);
+
+// draw block instead of ball
+           context.save();
+           context.translate(xBase, yBase+80-2*H1);
+           context.rotate(6.843*Math.PI/180.0);
+           context.fillStyle = "blue";
+           context.fillRect(2*x1-9, -17, 16, 16);
+           context.restore();
+
+
+// here's the ball code
+//           context.arc(xBase+2*x1, yBase+80-2*H1-radius-2+2*y1, radius, 0, 2 * Math.PI, false);
+//           context.fillStyle = '#00f';
+//           context.fill();
+//           context.stroke();
+
+//         draw the actual graphs
+           context.lineWidth = 4;
+
+           var graphDistance = 0.0;
+
+           // position graph, thermal energy
+           context.strokeStyle = "black";
+           eThermal = 0;
+           context.beginPath();
+           context.moveTo(xBase2, yBase2+40*graphY-(40/yIncrement)*eThermal);
+           for (i = 1; i <=index; i++) {
+             var graphTime = i/200;
+             if (graphTime > rampTime1) graphTime = rampTime1;
+             var graphSpeed = anet*graphTime;
+             graphDistance = 0.5*anet*graphTime*graphTime;
+             var graphY1 = graphDistance*H1/hyp1;
+             eThermal = graphDistance*mu*mass*g*(B1/hyp1)*12/39200;
+             if (mu > 0) context.lineTo(xBase2+(40/xIncrement)*graphDistance*B1/hyp1, yBase2+40*graphY-(40/yIncrement)*eThermal);
+            }
+            context.stroke();
+
+           // time graph, thermal energy
+           context.strokeStyle = "black";
+           eThermal = 0;
+           context.beginPath();
+           context.moveTo(xBase3, yBase2+40*graphY-(40/yIncrement)*eThermal);
+           for (i = 1; i <=index; i++) {
+             var graphTime = i/200;
+             if (graphTime > rampTime1) graphTime = rampTime1;
+             var graphSpeed = anet*graphTime;
+             graphDistance = 0.5*anet*graphTime*graphTime;
+             var graphY1 = graphDistance*H1/hyp1;
+             eThermal = graphDistance*mu*mass*g*(B1/hyp1)*12/39200;
+             if (mu > 0) context.lineTo(xBase3+(40/xIncrement3)*graphTime, yBase2+40*graphY-(40/yIncrement)*eThermal);
+            }
+            context.stroke();
+
+           // position graph, total energy
+           context.strokeStyle = "purple";
+           eTotal = mass*g*(H1)*12/39200;
+           context.beginPath();
+           context.moveTo(xBase2, yBase2+40*graphY-(40/yIncrement)*eTotal);
+           for (i = 1; i <=index; i++) {
+             var graphTime = i/200;
+             if (graphTime > rampTime1) graphTime = rampTime1;
+             var graphSpeed = anet*graphTime;
+             graphDistance = 0.5*anet*graphTime*graphTime;
+             var graphY1 = graphDistance*H1/hyp1;
+             ePotential = mass*g*(H1-graphY1)*12/39200;
+             eKinetic = 0.5*mass*graphSpeed*graphSpeed*12/39200;
+             eTotal = ePotential + eKinetic;
+             context.lineTo(xBase2+(40/xIncrement)*graphDistance*B1/hyp1, yBase2+40*graphY-(40/yIncrement)*eTotal);
+            }
+            context.stroke();
+
+           // time graph, total energy
+           context.strokeStyle = "purple";
+           eTotal = mass*g*(H1)*12/39200;
+           context.beginPath();
+           context.moveTo(xBase3, yBase2+40*graphY-(40/yIncrement)*eTotal);
+           for (i = 1; i <=index; i++) {
+             var graphTime = i/200;
+             if (graphTime > rampTime1) graphTime = rampTime1;
+             var graphSpeed = anet*graphTime;
+             graphDistance = 0.5*anet*graphTime*graphTime;
+             var graphY1 = graphDistance*H1/hyp1;
+             ePotential = mass*g*(H1-graphY1)*12/39200;
+             eKinetic = 0.5*mass*graphSpeed*graphSpeed*12/39200;
+             eTotal = ePotential + eKinetic;
+             context.lineTo(xBase3+(40/xIncrement3)*graphTime, yBase2+40*graphY-(40/yIncrement)*eTotal);
+            }
+            context.stroke();
+
+           // readouts
+           context.beginPath();
+
+           context.textAlign = 'center';
+           context.fillStyle = 'purple';
+           context.fillText("ME = " + eTotal.toFixed(1) + " J", 800, yBase-20);
+
+           context.textAlign = 'center';
+           context.fillStyle = 'red';
+           context.fillText("PE = " + Math.abs(ePotential).toFixed(1) + " J", 800, yBase+10);
+
+           context.textAlign = 'center';
+           context.fillStyle = '#44bb44';
+           context.fillText("KE = " + eKinetic.toFixed(1) + " J", 800, yBase+40);
+
+           if (mu > 0) {
+             context.textAlign = 'center';
+             context.fillStyle = 'black';
+             context.fillText("TE = " + eThermal.toFixed(1) + " J", 800, yBase+70);
+            }
+
+           // position graph, potential energy
+           context.strokeStyle = "red";
+           ePotential = mass*g*(H1)*12/39200;
+           context.beginPath();
+           context.moveTo(xBase2, yBase2+40*graphY-(40/yIncrement)*ePotential);
+           for (i = 1; i <=index; i++) {
+             var graphTime = i/200;
+             if (graphTime > rampTime1) graphTime = rampTime1;
+             graphDistance = 0.5*anet*graphTime*graphTime;
+             var graphY1 = graphDistance*H1/hyp1;
+             ePotential = mass*g*(H1-graphY1)*12/39200;
+             context.lineTo(xBase2+(40/xIncrement)*graphDistance*B1/hyp1, yBase2+40*graphY-(40/yIncrement)*ePotential);
+            }
+            context.stroke();
+
+           // time graph, potential energy
+           context.strokeStyle = "red";
+           ePotential = mass*g*(H1)*12/39200;
+           context.beginPath();
+           context.moveTo(xBase3, yBase2+40*graphY-(40/yIncrement)*ePotential);
+           for (i = 1; i <=index; i++) {
+             var graphTime = i/200;
+             if (graphTime > rampTime1) graphTime = rampTime1;
+             graphDistance = 0.5*anet*graphTime*graphTime;
+             var graphY1 = graphDistance*H1/hyp1;
+             ePotential = mass*g*(H1-graphY1)*12/39200;
+             context.lineTo(xBase3+(40/xIncrement3)*graphTime, yBase2+40*graphY-(40/yIncrement)*ePotential);
+            }
+            context.stroke();
+
+           // position graph, kinetic energy
+           context.strokeStyle = "#44bb44";
+           eKinetic = 0;
+           context.beginPath();
+           context.moveTo(xBase2, yBase2+40*graphY-(40/yIncrement)*eKinetic);
+           for (i = 1; i <=index; i++) {
+             var graphTime = i/200;
+             if (graphTime > rampTime1) graphTime = rampTime1;
+             var graphSpeed = anet*graphTime;
+             graphDistance = 0.5*anet*graphTime*graphTime;
+             eKinetic = 0.5*mass*graphSpeed*graphSpeed*12/39200;
+             context.lineTo(xBase2+(40/xIncrement)*graphDistance*B1/hyp1, yBase2+40*graphY-(40/yIncrement)*eKinetic);
+           }
+            context.stroke();
+
+           // time graph, kinetic energy
+           context.strokeStyle = "#44bb44";
+           eKinetic = 0;
+           context.beginPath();
+           context.moveTo(xBase3, yBase2+40*graphY-(40/yIncrement)*eKinetic);
+           for (i = 1; i <=index; i++) {
+             var graphTime = i/200;
+             if (graphTime > rampTime1) graphTime = rampTime1;
+             var graphSpeed = anet*graphTime;
+             graphDistance = 0.5*anet*graphTime*graphTime;
+             eKinetic = 0.5*mass*graphSpeed*graphSpeed*12/39200;
+             context.lineTo(xBase3+(40/xIncrement3)*graphTime, yBase2+40*graphY-(40/yIncrement)*eKinetic);
+           }
+            context.stroke();
+
+
+
+        // draw the scenario
+
+ //     console.log("In the drawMotion function, with runFlag = " + runFlag + " x2 = " + x2);
+
+           context.font = '16pt Calibri';
+           context.fillStyle = 'black';
+
+        if (time > rampTime1) time = rampTime1;
+  //      console.log(rampTime1);
+        var timeLabel = 't = ';
+        timeLabel = timeLabel + time.toFixed(3) + ' s';
+        context.textAlign = 'left';
+        context.fillText(timeLabel, xBase+540, 300);
+
+        var xLabel = 'x = ';
+        xLabel = xLabel + (graphDistance*B1/hyp1).toFixed(1) + ' cm';
+        context.textAlign = 'left';
+        context.fillText(xLabel, xBase+530, 340);
+
+           // key
+           context.strokeStyle = "purple";
+           context.beginPath();
+           context.moveTo(200-40, yBase-45);
+           context.lineTo(200+40, yBase-45);
+           context.stroke();
+
+           context.textAlign = 'center';
+           context.fillStyle = 'purple';
+           context.fillText("Mechanical", 200, yBase-30);
+
+           context.strokeStyle = "red";
+           context.beginPath();
+           context.moveTo(300-40, yBase-45);
+           context.lineTo(300+40, yBase-45);
+           context.stroke();
+
+           context.textAlign = 'center';
+           context.fillStyle = 'red';
+           context.fillText("Potential", 300, yBase-30);
+
+           context.strokeStyle = "#44bb44";
+           context.beginPath();
+           context.moveTo(400-40, yBase-45);
+           context.lineTo(400+40, yBase-45);
+           context.stroke();
+
+           context.textAlign = 'center';
+           context.fillStyle = '#44bb44';
+           context.fillText("Kinetic", 400, yBase-30);
+
+           if (mu > 0) {
+             context.strokeStyle = "black";
+             context.beginPath();
+             context.moveTo(500-40, yBase-45);
+             context.lineTo(500+40, yBase-45);
+             context.stroke();
+
+             context.textAlign = 'center';
+             context.fillStyle = 'black';
+             context.fillText("Thermal", 500, yBase-30);
+            }
+
+
+      }
+    }
+
+    function runMotion() {
+        drawMotion();
+        if (runFlag == 1) {
+          timer = window.setTimeout(runMotion, 1000/60);
+        }
+      }
+
+    function drawAxes(xAxisStart,yAxisStart,xNum, yNum, xOffset, xIncrement, yIncrement, xNumDecimals, yNumDecimals, xAxisTitle, yAxisTitle, graphTitle) {
+        // set background color for the graph
+           context.fillStyle = "#eff";
+           context.fillRect(xAxisStart, yAxisStart, 40*xNum, 40*yNum);
+
+           var axisLabel = '';
+           var axisValue = 0;
+
+         // vertical grid lines
+         context.lineWidth = 2;
+         context.strokeStyle = '#888';
+
+         for (var i = 0; i <= xNum; i++) {
+           context.beginPath();
+           context.moveTo(xAxisStart+40*i, yAxisStart);
+           context.lineTo(xAxisStart+40*i, yAxisStart+40*yNum+10);
+           context.stroke();
+           context.font = '14pt Calibri';
+           context.fillStyle = 'black';
+           context.textAlign = 'center';
+           context.textBaseline = 'middle';
+           axisValue = xOffset+xIncrement*(i);
+           axisLabel = axisValue.toFixed(xNumDecimals);
+           context.fillText(axisLabel, xAxisStart+40*i, yAxisStart+40*yNum+20);
+          }
+
+         // horizontal grid lines
+         for (i = 0; i <= yNum; i++) {
+           context.beginPath();
+           context.moveTo(xAxisStart-10, yAxisStart+40*i);
+           context.lineTo(xAxisStart+40*xNum, yAxisStart+40*i);
+           context.stroke();
+           context.font = '14pt Calibri';
+           context.fillStyle = 'black';
+           context.textAlign = 'center';
+           context.textBaseline = 'middle';
+           axisValue = yIncrement*(yNum-i);
+           axisLabel = axisValue.toFixed(yNumDecimals);
+           context.fillText(axisLabel, xAxisStart-30, yAxisStart+40*i);
+
+          }
+
+         // x-axis
+           context.strokeStyle = '#000';
+           context.lineWidth = 4;
+           context.beginPath();
+           context.moveTo(xAxisStart-1, yAxisStart+40*yNum);
+           context.lineTo(xAxisStart+40*xNum+20, yAxisStart+40*yNum);
+           context.stroke();
+           context.moveTo(xAxisStart+40*xNum+10, yAxisStart+40*yNum-6);
+           context.lineTo(xAxisStart+40*xNum+20, yAxisStart+40*yNum);
+           context.lineTo(xAxisStart+40*xNum+10, yAxisStart+40*yNum+6);
+           context.lineJoin = 'miter';
+           context.stroke();
+           context.font = '16pt Calibri';
+           context.fillStyle = 'black';
+           context.textAlign = 'left';
+           context.fillText(xAxisTitle, xAxisStart+40*xNum+24, yAxisStart+40*yNum);
+
+         // y-axis
+           context.strokeStyle = '#000';
+           context.beginPath();
+           context.moveTo(xAxisStart, yAxisStart-20);
+           context.lineTo(xAxisStart, yAxisStart+40*yNum);
+           context.stroke();
+           context.moveTo(xAxisStart-6, yAxisStart-10);
+           context.lineTo(xAxisStart, yAxisStart-20);
+           context.lineTo(xAxisStart+6, yAxisStart-10);
+           context.lineJoin = 'miter';
+           context.stroke();
+           context.strokeStyle = '#000';
+           context.textAlign = 'center';
+  //         console.log("In the drawMotion function, with yAxisTitle = " + yAxisTitle + xAxisStart );
+
+           context.font = '16pt Calibri';
+           context.fillStyle = 'black';
+           context.fillText(yAxisTitle, xAxisStart-30, yAxisStart - 35);
+
+           // graph title
+           context.font = 'bold 18pt Calibri';
+           context.fillStyle = 'purple';
+           context.textAlign = 'center';
+           context.fillText(graphTitle, xAxisStart+40*xNum/2, yAxisStart-24);
+
+    }
+
+
+  </script>
+
+
+ <p><a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a><br>This <span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/InteractiveResource" rel="dct:type">work</span> by <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">Andrew Duffy</span> is licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.<br>This simulation can be found in the collection at <a xmlns:dct="http://purl.org/dc/terms/" href="http://physics.bu.edu/~duffy/classroom.html" rel="dct:source">http://physics.bu.edu/~duffy/classroom.html</a>.</p>
+  
+ 
+
+</body>
+<style>
+    input{
+        background-color: #9999ff;
+        border: #9999ff;
+    }
+    p{
+        color: white;
+    }
+    div{
+        color: white;
+    }
+</style>
+</html>

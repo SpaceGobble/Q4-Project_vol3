@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Computational Physics">
+    <meta name="keywords" content="HTML, CSS, JavaScript">
+    <meta name="author" content="Uzman Plaso">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computational Physics</title>
+    <style>
+        #openingPage{
+            background-image: url('ComPhy.png');
+            background-repeat: no-repeat;
+            background-size: cover;
+            height: 100vh;
+        }
+        body{
+            background-color: #07081D;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        header img{
+            height: 8vh;
+            width: auto;
+            position: relative;
+            top: 1vh;
+        }
+        header nav{
+            display: inline;
+        }
+        header{
+            display: inline;
+            position: sticky;
+        }
+        header ul {
+            display: inline;
+        }
+        header nav ul li{
+            list-style: none;
+            display: inline;
+            padding: 1vw;
+            padding-top: none;
+            color: white;
+            font-size: 3vh;
+            text-decoration: none ;
+            position: relative;
+            top: -1.5vh;
+            text-align: center;
+        }
+        header h1{
+            display: inline;
+            font-size: 8vh;
+            color: white;
+            padding : 1vw;
+            margin: 0px;
+        }
+        #login{
+            font-size: 3.5vh;
+            font-weight: bold;
+            background-color: #07081D;
+            color: white;
+            border: #07081D;
+            transform: translate(57vh,-1.5vh);
+        }
+        #register{
+            font-size: 3.5vh;
+            font-weight: bold;
+            background-color: #A193C7;
+            color: black;
+            border: #A193C7;
+            border-radius: .8vh;
+            transform: translate(57vh,-1.5vh);
+        }
+        #about{
+            color:white;
+            text-align: center;
+        }
+        aside{
+            color: white;
+            text-align: center;
+            width: 40vw;
+            display: inline-block;
+            transform: translate(0,-20vh);
+        }
+        .paragraph1{
+            font-size: 2vh;
+            font-weight: bold;
+        }
+        .paragraph2{
+            font-size: 5vh;
+            font-weight: bold;
+            margin: 0;
+            padding: 0;
+        }
+        .paragraph3{
+            font-size: 3vh;
+        }
+        button{
+            font-size: 3.5vh;
+            font-weight: bold;
+            background-color: #A193C7;
+            color: black;
+            border: #A193C7;
+            border-radius: .8vh;
+        }
+        header nav ul li a{
+            color: white;
+            text-decoration: none ;
+        }
+        #q1, #q2, #q3, #q4{
+            width: 50vw;
+            display: inline;
+        }
+    </style>
+  </head>
+  <body>
+    <div id="openingPage">
+        <header>
+            <img src="ComPhy (4).png" alt="logo">
+            <h1>ComPhy</h1>
+            <nav>
+                <ul>
+                    <li><a href="index.htmle</a></li>
+                    <li><a href="Simulation.html">Simulations</a></li>
+                    <li><a href="LearnMore.html">Learn More</a></li>
+                </ul>
+                <button onclick="login()" id="login">Login</button>
+                <button onclick="register()" id="register" >Register</button>
+            </nav>
+        </header>
+        <div id="about">
+            <p class="paragraph1">ABOUT</p>
+            <p class="paragraph2">Background of Computational Physics<p>
+            <p class="paragraph3">According to Wikipedia "Computational physics is the study and implementation of numerical analysis to solve problems in physics. Historically, computational physics was the first application of modern computers in science, and is now a subset of computational science. It is sometimes regarded as a subdiscipline (or offshoot) of theoretical physics, but others consider it an intermediate branch between theoretical and experimental physics — an area of study which supplements both theory and experiment."</p>
+            <p class="paragraph3">There is a debate about the status of computation within the scientific method. Sometimes it is regarded as more akin to theoretical physics; some others regard computer simulation as "computer experiments", yet still others consider it an intermediate or different branch between theoretical and experimental physics, a third way that supplements theory and experiment. While computers can be used in experiments for the measurement and recording (and storage) of data, this clearly does not constitute a computational approach.</p>
+        </div>
+        <aside>
+            <p class="paragraph1">SAMPLE</p>
+            <p class="paragraph2">Sample Questions<p>
+            <p class="paragraph3">Questions like these are only a few you can face while doing Computational Physics, but they provide a good basis for what to expect.</p>
+            <button onclick="forward()">Next Question</button>
+        </aside>
+        <img id="q1" src="https://d2vlcm61l7u1fs.cloudfront.net/media%2F4be%2F4be5efc7-8b73-4a2b-bad6-f5e725857a43%2FphpgbItqw.png" alt="Computational Physics Q1">
+        <img id="q2" src="https://d2vlcm61l7u1fs.cloudfront.net/media%2F330%2F3300cd50-1e6b-4174-b591-5c9b0a3dda2e%2FphpUi8aVS.png" alt="Computational Physics Q2">
+        <img id="q3" src="https://media.cheggcdn.com/media/c5a/c5a817e9-6986-4901-9379-48c10590bc48/php47BbkA" alt="Computational Physics Q3">
+        <img id="q4" src="https://www.mapleprimes.com/view.aspx?sf=208237_post/Screen_Shot_2017-05-13_at_3.44.09_PM.png" alt="Computational Physics Q4">
+    </div>
+
+    
+  </body>
+  <script>
+	function login(){
+        window.location.href = "Login.html";
+    }
+    function register(){
+        window.location.href = "register.html";
+    }
+    var x = 0
+    function swap(){
+        if(x == 0){
+            document.getElementById("q1").style.display = "inline";
+            document.getElementById("q2").style.display = "none";
+            document.getElementById("q3").style.display = "none";
+            document.getElementById("q4").style.display = "none";
+        }
+        else if (x == 1){
+            document.getElementById("q1").style.display = "none";
+            document.getElementById("q2").style.display = "inline";
+            document.getElementById("q3").style.display = "none";
+            document.getElementById("q4").style.display = "none";
+        }
+        else if (x == 2){
+            document.getElementById("q1").style.display = "none";
+            document.getElementById("q2").style.display = "none";
+            document.getElementById("q3").style.display = "inline";
+            document.getElementById("q4").style.display = "none";
+        }
+        else if (x == 3){
+            document.getElementById("q1").style.display = "none";
+            document.getElementById("q2").style.display = "none";
+            document.getElementById("q3").style.display = "none";
+            document.getElementById("q4").style.display = "inline";
+        }
+        
+    }
+    swap();
+	function forward(){
+        if(x == 3){
+            x = 0;
+        }
+        else{
+            x++;
+        }
+        swap();
+    }
+  </script>
+    
+</html>

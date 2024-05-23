@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Computational Physics">
+    <meta name="keywords" content="HTML, CSS, JavaScript">
+    <meta name="author" content="Uzman Plaso">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computational Physics</title>
+    <style>
+        #openingPage{
+            background-image: url('ComPhy.png');
+            background-repeat: no-repeat;
+            background-size: cover;
+            height: 100vh;
+        }
+        body{
+            background-color: #07081D;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        header img{
+            height: 8vh;
+            width: auto;
+            position: relative;
+            top: 1vh;
+        }
+        header nav{
+            display: inline;
+        }
+        header{
+            display: inline;
+            position: sticky;
+        }
+        header ul {
+            display: inline;
+        }
+        header nav ul li{
+            list-style: none;
+            display: inline;
+            padding: 1vw;
+            padding-top: none;
+            color: white;
+            font-size: 3vh;
+            text-decoration: none ;
+            position: relative;
+            top: -1.5vh;
+            text-align: center;
+        }
+        header h1{
+            display: inline;
+            font-size: 8vh;
+            color: white;
+            padding : 1vw;
+            margin: 0px;
+        }
+        #login{
+            font-size: 3.5vh;
+            font-weight: bold;
+            background-color: #07081D;
+            color: white;
+            border: #07081D;
+            transform: translate(57vh,-1.5vh);
+        }
+        #register{
+            font-size: 3.5vh;
+            font-weight: bold;
+            background-color: #A193C7;
+            color: black;
+            border: #A193C7;
+            border-radius: .8vh;
+            transform: translate(57vh,-1.5vh);
+        }
+        #simChoose{
+            display: inline;
+        }
+        #simChoose li{
+            list-style: none;
+            display: inline;
+            padding: 1vw;
+            padding-left: 4.5vw;
+            padding-top: none;
+            color: #A193C7;
+            font-size: 3vh;
+            text-decoration: none ;
+            position: relative;
+            top: -17.5vh;
+            left: 10vw;
+            text-align: center;
+        }
+        #paragraph1, #paragraph2, #paragraph3{
+            color: White;
+            text-align: center;
+        }
+        #paragraph1{
+            font-size: 2vh;
+            font-weight: bold;
+        }
+        #paragraph2{
+            font-size: 5vh;
+            font-weight: bold;
+            margin: 0;
+            padding: 0;
+        }
+        #paragraph3{
+            font-size: 3vh;
+        }
+        .arrow{
+            color: white;
+            display: inline;
+            position: absolute;
+            font-size: 10vh;
+            top: 50vh
+        }
+        #right{
+            left:93vw;
+        }
+        header nav ul li a{
+            color: white;
+            text-decoration: none ;
+        }
+    </style>
+  </head>
+  <body>
+    <div id="openingPage">
+        <header>
+            <img src="ComPhy (4).png" alt="logo">
+            <h1>ComPhy</h1>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="Simulation.html">Simulations</a></li>
+                    <li><a href="LearnMore.html">Learn More</a></li>
+                </ul>
+                <button onclick="login()" id="login">Login</button>
+                <button onclick="register()" id="register" >Register</button>
+            </nav>
+        </header>
+        <p id="paragraph1">APPLICATION</p>
+        <p id="paragraph2">Simulations<p>
+        <p id="paragraph3">Simulations are one aspect of Computational Physics. Simulations not only allow you to predict the result of an experiment, but they save the time and effort of conducting one. Enjoy these four simulations courtesy of Boston University</p>
+        <a href="#" onclick="back()"><p class="arrow" id="left" style="transform: rotate(180deg);">➤</p></a>
+        <center>
+            <iframe id="collision" src="Collision.html" frameborder="0" style="width: 70vw; height: 120vh;"></iframe>
+            <iframe id="energy" src="Energy.html" frameborder="0" style="width: 80vw; height: 100vh;"></iframe>
+            <iframe id="rotation" src="Rotation.html" frameborder="0" style="width: 80vw; height: 150vh;"></iframe>   
+            <iframe id="pendulumn" src="Pendulumn.html" frameborder="0" style="width: 80vw; height: 120vh;"></iframe>
+        </center>
+        <a href="#" onclick="forward()"><p class="arrow" id="right">➤</p></a>
+    </div>
+  </body>
+  <script>
+    var x = 0
+    function swap(){
+        if(x == 0){
+            document.getElementById("collision").style.display = "inline";
+            document.getElementById("energy").style.display = "none";
+            document.getElementById("rotation").style.display = "none";
+            document.getElementById("pendulumn").style.display = "none";
+        }
+        else if (x == 1){
+            document.getElementById("collision").style.display = "none";
+            document.getElementById("energy").style.display = "inline";
+            document.getElementById("rotation").style.display = "none";
+            document.getElementById("pendulumn").style.display = "none";
+        }
+        else if (x == 2){
+            document.getElementById("collision").style.display = "none";
+            document.getElementById("energy").style.display = "none";
+            document.getElementById("rotation").style.display = "inline";
+            document.getElementById("pendulumn").style.display = "none";
+        }
+        else if (x == 3){
+            document.getElementById("collision").style.display = "none";
+            document.getElementById("energy").style.display = "none";
+            document.getElementById("rotation").style.display = "none";
+            document.getElementById("pendulumn").style.display = "inline";
+        }
+        
+    }
+    swap();
+	function forward(){
+        if(x == 3){
+            x = 0;
+        }
+        else{
+            x++;
+        }
+        swap();
+    }
+    function back(){
+        if(x == 0){
+            x = 3;
+        }
+        else{
+            x--;
+        }
+        swap();
+    }
+    function login(){
+        window.location.href = "Login.html";
+    }
+    function register(){
+        window.location.href = "register.html";
+    }
+  </script>
+    
+</html>

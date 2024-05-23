@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html><head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-8175315-16"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-8175315-16');
+</script>
+
+  <meta charset="utf-8">
+  <title>Block and pulley, showing energy</title>
+    <style>
+.VCRButton {
+    background-color: #9999ff;
+    border: none;
+    border-radius: 4px;
+    color: black;
+    padding: 2px 2px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+.graphButton {
+    background-color: #0000ff;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    padding: 4px 4px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+/* Style the active class, and buttons on mouse-over */
+.active, .graphButton:hover {
+    background-color: #009999;
+    color: white;
+  }
+
+  .pButton {
+    background-color: #9999ff;
+    border: none;
+    border-radius: 4px;
+    color: black;
+    padding: 4px 4px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+/* Style the active class, and buttons on mouse-over */
+.active2, .pButton:hover {
+    background-color: #009999;
+    color: white;
+  }
+  div{
+    color: white;
+  }
+  p{
+    color: white;
+  }
+  input{
+    background-color: white;
+    border: white;
+  }
+</style>
+<style type="text/css" id="operaUserStyle"></style><style type="text/css"></style></head>
+
+<body style="font-family:sans-serif; font-size:15px; width:700px; margin-left:auto; margin-right:auto;">
+    <canvas id="myCanvas" width="700" height="600"></canvas>
+<center>
+    <div id="buttons">
+      <input type="button" class="VCRButton" id="play" value="Play" onclick="play()">
+      <input type="button" class="VCRButton" id="pause" value="Pause" onclick="pause()">
+      <input type="button" class="VCRButton" id="stepback" value="<< Step" onclick="stepBack()">
+      <input type="button" class="VCRButton" id="stepforward" value="Step >>" onclick="stepForward()">
+      <input type="button" class="VCRButton" id="reset" value="Reset" onclick="reset()">
+    </div>
+
+<br>
+    <div id="Energybuttons"><b>Show energy for:</b>
+      <input type="button" class="graphButton active" id="E1" value="Earth + block + pulley" onclick="setEnergyMode(1)">
+      <input type="button" class="graphButton" id="E2" value="Earth + block" onclick="setEnergyMode(2)">
+      <br>
+      <input type="button" class="graphButton" id="E4" value="block + pulley" onclick="setEnergyMode(4)">
+      <input type="button" class="graphButton" id="E5" value="pulley" onclick="setEnergyMode(5)">
+      <input type="button" class="graphButton" id="E6" value="block" onclick="setEnergyMode(6)">
+   </div>
+
+    <div>Mass of the block</div>
+     <div id="slider1">
+      0.1 kg <input type="range" id="mass1Value" min="0.1" max="2.0" value="1.2" step="0.1" oninput="showMass1(this.value)" onchange="showMass1(this.value)"> 2.0 kg
+     <div id="initialMass1Value">1.2</div>
+    </div>
+    <div>Mass of the pulley</div>
+     <div id="slider3">
+      0.0 kg <input type="range" id="mass3Value" min="0.0" max="2.0" value="1.0" step="0.1" oninput="showMass3(this.value)" onchange="showMass3(this.value)"> 2.0 kg
+     <div id="initialMass3Value">1.0</div>
+    </div>
+
+    <div id="pulleyButtons">The pulley is a
+      <input type="button" class="pButton active2" id="pulley1" value="Uniform solid disk" onclick="setPulley(0.5)">
+      <input type="button" class="pButton" id="pulley2" value="Ring" onclick="setPulley(1.0)">
+    </div>
+    <div id="FBDbuttons">
+      <input type="button" id="FBD1" value="Hide the free-body diagrams" onclick="setMode(1)">
+      <input type="button" id="FBD2" value="Show the free-body diagrams" onclick="setMode(2)">
+    </div>
+
+</center>
+
+<script>
+// Add active class to the current button (highlight it)
+var header = document.getElementById("Energybuttons");
+var btns = header.getElementsByClassName("graphButton");
+for (var i = 0; i < btns.length; i++) {
+  btns[i].addEventListener("click", function() {
+    var current = document.getElementsByClassName("active");
+    current[0].className = current[0].className.replace(" active", "");
+    this.className += " active";
+  });
+}
+
+// Add active2 class to the current button (highlight it)
+var header2 = document.getElementById("pulleyButtons");
+var Gbtns = header2.getElementsByClassName("pButton");
+for (var i = 0; i < Gbtns.length; i++) {
+  Gbtns[i].addEventListener("click", function() {
+    var current2 = document.getElementsByClassName("active2");
+    current2[0].className = current2[0].className.replace(" active2", "");
+    this.className += " active2";
+  });
+}
+
+
+</script>
+
+  <script>
+
+// Simulation first posted on 9-1-2016
+
+      function showMass1(newMass1)
+      {
+             //get the element
+             var display = document.getElementById("initialMass1Value");
+             //show the amount
+             display.innerHTML=newMass1;
+             mass1 = Number(newMass1);
+             reset();
+     }
+
+
+           function showMass3(newMass3)
+      {
+             //get the element
+             var display = document.getElementById("initialMass3Value");
+             //show the amount
+             display.innerHTML=newMass3;
+             massp = Number(newMass3);
+             reset();
+     }
+
+           function setPulley(newPulley)
+      {
+             //get the element
+             c = Number(newPulley);
+             reset();
+     }
+
+
+      function setMode(newMode)
+      {
+             //get the element
+             mode = Number(newMode);
+             reset();
+     }
+
+      function setEnergyMode(newEnergyMode)
+      {
+             //get the element
+             energyMode = Number(newEnergyMode);
+             if (energyMode == 1) systemTitle = "Earth + block + pulley";
+             if (energyMode == 2) systemTitle = "Earth + block";
+             if (energyMode == 4) systemTitle = "block + pulley";
+             if (energyMode == 5) systemTitle = "pulley";
+             if (energyMode == 6) systemTitle = "block";
+             reset();
+     }
+
+      function play() {
+        window.clearTimeout(timer);
+        runFlag = 1;
+        runMotion();
+
+      }
+
+      function pause() {
+        window.clearTimeout(timer);
+        runFlag = 0;
+
+      }
+
+      function stepForward() {
+        window.clearTimeout(timer);
+        runFlag = 1;
+        drawMotion();
+
+      }
+
+      function stepBack() {
+        window.clearTimeout(timer);
+        index = index-2;
+        if (index < -1) index = -1;
+//        time = index/20;
+//        xPos = xBase;
+        runFlag = 1;
+        drawMotion();
+
+      }
+
+
+      function reset() {
+        window.clearTimeout(timer);
+        index = -1;
+        time = 0;
+        a = g*(mass1)/(mass1+c*massp);
+        runFlag = 1;
+        drawMotion();
+
+      }
+
+
+      var canvas = document.getElementById("myCanvas");
+      var context = canvas.getContext("2d");
+      var index = -1;
+
+      var xBase = canvas.width/2;     // for the motion
+      var yBase = 90;     // for the motion
+      var xBase2 = 140;   // for the bar graphs
+      var yBase2 = 480;   // for the bar graphs
+      var xInit = 37;
+      var graphType = 1;
+      var graphTitle = "A block and a pulley";
+      var graph2Title = 'Acceleration is up';
+      var systemTitle = "Earth + block + pulley";
+      var yAxisTitle = 'y (m)';
+      var xAxisTitle = 'x (m)';
+      var yAxis2Title = 'y (m)';
+      var xAxis2Title = 't (s)';
+      var yAxis2Pos = 0;
+      var xIncrement = 30;
+      var xNumDecimals = 0;
+      var yIncrement = 30;
+      var yNumDecimals = 0;
+      var graphY = 4;
+      var graphX = 10;
+      var yStart = yBase+120;
+      var plotColor = '#ff00ff';
+      var scenario = 1;
+      var vxInit = 40;
+      var vyFactor = 0.33;
+      var vyInit = vyFactor*vxInit;
+      var xPos = 0.0;
+      var y1PosInit = 3.2;
+      var y2PosInit = 3.2;
+      var scaleFactor = 40;
+      var mass1 = 1.2;
+      var mass2 = 0.0;
+      var massp = 1.0;
+      var c = 0.5;
+      var vy = 0;
+      var g = 10;
+      var a = g*(mass1)/(mass1+c*massp);
+      var mode = 2;
+      var energyMode = 1;
+      var radius = 40;
+      var time = -0.5;
+      var deltat = 1/20.0;
+      var timer;
+      var runFlag = 1;
+      var graphDistance = 0.0;
+      var graphTime = 0.0;
+      var graphX1 = 0.0;
+      var graphY1 = 0.0;
+      var graphSpeed = 0.0;
+      var theta = 0.0;
+
+      reset();
+
+    function drawMotion() {
+
+  //    console.log("In the drawMotion function, with runFlag = " + runFlag );
+
+      if ((index >= 1000) || (Math.abs(0.5*a*time*time) >= 2.4)) runFlag = 0;
+
+  //    console.log("In the drawMotion function, with runFlag = " + runFlag + " Fx = " + Fx);
+
+      if (runFlag == 1) {    //      run if runFlag equal 1, not if equal 0
+        // clear
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        index = index + 1;
+        context.textBaseline = 'middle';
+
+
+        // set background color for the entire thing
+           context.fillStyle = "#ffd";
+           context.fillRect(0, 0, canvas.width, canvas.height);
+
+           var axisLabel = '';
+           var axisValue = 0;
+
+        // set line color
+           context.strokeStyle = '#999';
+           context.lineWidth = 2;
+
+           time = index/100.0;
+           graph2Title = 'Accelerating';
+           var y1Pos = y1PosInit + 0.5*a*time*time;
+           var y2Pos = y2PosInit - 0.5*a*time*time;
+           var speed = a*time;
+           var distance = 0.5*a*time*time;
+           theta = 0.5*a*time*time*scaleFactor/radius;
+
+
+ //          console.log(time + ' ' + y1Pos);
+
+
+        // draw the pulley
+           context.strokeStyle = 'black';
+           context.fillStyle = 'gray';
+           context.lineWidth = 2;
+           context.beginPath();
+           context.arc(xBase, yBase, radius, 0, 2 * Math.PI, false);
+           context.stroke();
+           if (c < 1.0) context.fill();
+           if (mode == 2) {
+             context.beginPath();
+             context.arc(xBase+240, yBase, radius, 0, 2 * Math.PI, false);
+             if (c < 1.0) context.fill();
+             context.stroke();
+            }
+
+// draw a line on the pulley
+           context.strokeStyle = '#4d4';
+           context.beginPath();
+           context.moveTo(xBase, yBase);
+           context.lineTo(xBase + radius*Math.cos(theta), yBase - radius*Math.sin(theta));
+           context.stroke();
+
+        // draw the string
+           context.strokeStyle = 'black';
+           context.beginPath();
+           context.moveTo(xBase-radius, yBase);
+           context.lineTo(xBase-radius, yBase + scaleFactor*y1Pos);
+           context.stroke();
+
+        // draw block 1
+           context.strokeStyle = 'black';
+           context.fillStyle = '#77f';
+           context.lineWidth = 2;
+           context.beginPath();
+           context.fillRect(xBase-radius-20, yBase + scaleFactor*y1Pos, 40, 40*mass1);
+           context.strokeRect(xBase-radius-20, yBase + scaleFactor*y1Pos, 40, 40*mass1);
+
+           if (mode == 2) {
+             context.beginPath();
+             context.fillRect(xBase-radius-20-80, yBase + scaleFactor*y1PosInit, 40, 40*mass1);
+             context.strokeRect(xBase-radius-20-80, yBase + scaleFactor*y1PosInit, 40, 40*mass1);
+           }
+
+
+           var fT1 = mass1*(g-a);
+
+        if (mode == 2) {
+
+        // draw the free-body diagram of block 1
+             drawArrow(0,-0.8*mass1*g,xBase-radius-80, yBase + scaleFactor*y1PosInit + 40*mass1,"green");  // Mg
+             drawArrow(0,0.8*fT1,xBase-radius-80, yBase + scaleFactor*y1PosInit,"purple");  // tension1
+
+
+        // draw the free-body diagram of the pulley
+             drawArrow(0,-0.8*fT1,xBase+240-radius, yBase ,"purple");  // tension1
+
+        }
+
+ //     console.log("In the drawMotion function, with runFlag = " + runFlag + " x2 = " + x2);
+
+
+           // graph titles
+           context.font = 'bold 16pt Calibri';
+           context.fillStyle = 'purple';
+           context.textAlign = 'center';
+           context.fillText(graphTitle, xBase, 35);
+//           context.fillText(graph2Title, xBase+180, 65);
+
+           context.font = '16pt Calibri';
+           context.fillStyle = 'black';
+           var aLabel = 'a = ';
+           aLabel = aLabel + (a).toFixed(2) + ' m/s/s';
+           context.textAlign = 'left';
+           context.fillText(aLabel, 30, 80);
+
+           var mg1Label = 'Mg = ';
+           mg1Label = mg1Label + (mass1*g).toFixed(2) + ' N';
+           context.textAlign = 'left';
+           context.fillText(mg1Label, 30, 110);
+
+           var fT1Label = 'F   = ';
+           fT1Label = fT1Label + (fT1).toFixed(2) + ' N';
+           context.textAlign = 'left';
+           context.fillText(fT1Label, 30, 140);
+           context.font = '12pt Calibri';
+           context.fillStyle = 'black';
+           fT1Label = 'T';
+           context.fillText(fT1Label, 30+8, 140+8);
+
+           context.font = '16pt Calibri';
+           var vLabel = 'v = ';
+           vLabel = vLabel + Math.abs(speed).toFixed(2) + ' m/s';
+           context.textAlign = 'left';
+           context.fillText(vLabel, 30, 170);
+
+           context.font = '16pt Calibri';
+           var tLabel = 't = ';
+           tLabel = tLabel + Math.abs(time).toFixed(2) + ' s';
+           context.textAlign = 'left';
+           context.fillText(tLabel, 30, 200);
+
+
+        if (mode == 2) {
+            context.font = '16pt Calibri';
+            context.fillStyle = 'green';
+            context.textAlign = 'left';
+            forceLabel = "Mg";
+            context.fillText(forceLabel, xBase-radius-80 + 10, yBase + scaleFactor*y1PosInit + 40*mass1 + 30);
+
+            context.fillStyle = 'purple';
+            forceLabel = "F";
+            context.fillText(forceLabel, xBase-radius-80 + 10, yBase + scaleFactor*y1PosInit - 30);
+            context.font = 'bold 12pt Calibri';
+            forceLabel = "T";
+            context.fillText(forceLabel, xBase-radius-80 + 10 + 8, yBase + scaleFactor*y1PosInit - 30 + 9);
+
+            context.font = '16pt Calibri';
+            forceLabel = "F";
+            context.fillText(forceLabel, xBase+240-radius - 32, yBase + 22);
+            context.font = 'bold 12pt Calibri';
+            forceLabel = "T";
+            context.fillText(forceLabel, xBase+240-radius - 32 + 8, yBase + 22 + 9);
+
+        }
+
+       // bar graphs section
+
+          var U1i = mass1*g*(5.6-y1PosInit);
+          var K1i = 0;
+          var U1 = mass1*g*(5.6-y1Pos);
+          var K1 = 0.5*mass1*speed*speed;
+          var Kp = 0.5*c*massp*speed*speed;
+          var Wg1 = U1i - U1;
+          var WT1 = -fT1*distance;
+          var yOffset = 0;
+          var energyLabel = " ";
+          yIncrement = 4*Math.ceil(0.25*(U1i)/(2));
+
+  // draw backgrounds for different graph sections
+           context.fillStyle = '#afa';
+           context.beginPath();
+           context.fillRect(xBase2, yBase2-80, 110, 160);
+           context.fillStyle = '#aff';
+           context.beginPath();
+           context.fillRect(xBase2+110, yBase2-80, 130, 160);
+           context.fillStyle = '#ffa';
+           context.beginPath();
+           context.fillRect(xBase2+240, yBase2-80, 160, 160);
+           context.textAlign = 'left';
+           context.font = 'bold 16pt Calibri';
+           context.fillStyle = 'black';
+           context.fillText("Energy (J)", xBase2-60, yBase2-110);
+           context.fillText("Initial          plus work     equals final energy", xBase2+24, yBase2+92);
+           context.fillStyle = 'purple';
+           context.textAlign = 'center';
+           context.fillText(systemTitle, xBase2+200, yBase2-95);
+
+
+  // draw baseline
+           context.strokeStyle = 'black';
+           context.lineWidth = 2;
+           context.beginPath();
+           context.moveTo(xBase2,yBase2);
+           context.lineTo(xBase2+400,yBase2);
+           context.stroke();
+
+         // horizontal grid lines
+         for (i = 0; i <= graphY; i++) {
+           context.beginPath();
+           context.moveTo(xBase2, yBase2+40*(i-2));
+           context.lineTo(xBase2+400, yBase2+40*(i-2));
+           context.stroke();
+           context.font = '14pt Calibri';
+           context.fillStyle = 'black';
+           context.textAlign = 'center';
+           context.textBaseline = 'middle';
+           axisValue = yIncrement*(2-i);
+           axisLabel = axisValue.toFixed(yNumDecimals);
+           context.fillText(axisLabel, xBase2-20, yBase2+40*(i-2));
+          }
+
+          context.textAlign = 'left';
+
+          context.fillStyle = '#77f';
+          if (energyMode < 3) {
+            context.beginPath();
+            context.fillRect(xBase2+20-12, yBase2, 24, -(40/yIncrement)*U1i);
+            context.beginPath();
+            context.fillRect(xBase2+260-12, yBase2, 24, -(40/yIncrement)*U1);
+            context.font = 'bold 16pt Calibri';
+            context.fillText("U", xBase2+20-3, yBase2 + 10);
+            context.fillText("U", xBase2+260-2, yBase2 + 10);
+            energyLabel = 'U   = ';
+            energyLabel = energyLabel + (U1i).toFixed(2) + ' J';
+            context.fillText(energyLabel, xBase2+420, yBase2 - 140);
+            energyLabel = 'U  = ';
+            energyLabel = energyLabel + (U1).toFixed(2) + ' J';
+            context.fillText(energyLabel, xBase2+420, yBase2 + 10);
+            context.font = 'bold 12pt Calibri';
+            context.fillText("bi", xBase2+20-3+14, yBase2 + 10 + 10);
+            context.fillText("b", xBase2+260-2+12, yBase2 + 10 + 10);
+            context.fillText("bi", xBase2+420+14, yBase2 -140 + 10);
+            context.fillText("b", xBase2+420+14, yBase2 + 10 + 10);
+          }
+          if (energyMode != 5) {
+            context.font = 'bold 16pt Calibri';
+            context.fillText("K", xBase2+50-3, yBase2 + 10);
+            energyLabel = 'K   =  0 J';
+            context.fillText(energyLabel, xBase2+420, yBase2 - 110);
+            context.font = 'bold 12pt Calibri';
+            context.fillText("bi", xBase2+50-3+17, yBase2 + 10 + 10);
+            context.fillText("bi", xBase2+420+17, yBase2 -110 + 10);
+          }
+          if ((energyMode == 1) || (energyMode == 4) || (energyMode == 5)) {
+            context.font = 'bold 16pt Calibri';
+            context.fillText("K", xBase2+80-3, yBase2 + 10);
+            energyLabel = 'K   =  0 J';
+            context.fillText(energyLabel, xBase2+420, yBase2 - 80);
+            context.font = 'bold 12pt Calibri';
+            context.fillText("pi", xBase2+80-3+17, yBase2 + 10 + 10);
+            context.fillText("pi", xBase2+420+17, yBase2 -80 + 10);
+          }
+
+          if ((energyMode < 3) || (energyMode == 4) || (energyMode == 6)) {
+            context.beginPath();
+            context.fillRect(xBase2+320-12, yBase2, 24, -(40/yIncrement)*K1);
+            context.font = 'bold 16pt Calibri';
+            context.fillText("K", xBase2+320-3, yBase2 + 10);
+            energyLabel = 'K  = ';
+            energyLabel = energyLabel + (K1).toFixed(2) + ' J';
+            context.fillText(energyLabel, xBase2+420, yBase2 + 40);
+            context.font = 'bold 12pt Calibri';
+            context.fillText("b", xBase2+320-2+15, yBase2 + 10 + 10);
+            context.fillText("b", xBase2+420+15, yBase2 + 40 + 10);
+          }
+
+          if ((energyMode == 1) || (energyMode == 4) || (energyMode == 5)) {
+            context.fillStyle = '#aa6';
+            context.beginPath();
+            context.fillRect(xBase2+380-12, yBase2, 24, -(40/yIncrement)*Kp);
+            context.font = 'bold 16pt Calibri';
+            context.fillText("K", xBase2+380-3, yBase2 + 10);
+            energyLabel = 'K  = ';
+            energyLabel = energyLabel + (Kp).toFixed(2) + ' J';
+            context.fillText(energyLabel, xBase2+420, yBase2 + 70);
+
+            context.font = 'bold 12pt Calibri';
+            context.fillText("p", xBase2+380-2+15, yBase2 + 10 + 10);
+            context.fillText("p", xBase2+420+15, yBase2 + 70 + 10);
+          }
+
+          context.fillStyle = 'green';
+          if ((energyMode == 4) || (energyMode == 6)) {
+            context.beginPath();
+            context.fillRect(xBase2+120-12, yBase2, 24, -(40/yIncrement)*Wg1);
+            yOffset = 0;
+            if (mass1 < mass2) yOffset = -30;
+            context.font = 'bold 16pt Calibri';
+            context.fillText("W", xBase2+120-8, yBase2 + yOffset + 10);
+            energyLabel = 'W   = ';
+            energyLabel = energyLabel + (Wg1).toFixed(2) + ' J';
+            context.fillText(energyLabel, xBase2+420, yBase2 - 50);
+            context.font = 'bold 12pt Calibri';
+            context.fillText("gb", xBase2+120-8+15, yBase2 +yOffset + 10 + 10);
+            context.fillText("gb", xBase2+420+15, yBase2 -50 + 10);
+          }
+
+          context.fillStyle = 'purple';
+          if ((energyMode == 2) || (energyMode == 6)) {
+            context.beginPath();
+            context.fillRect(xBase2+185-12, yBase2, 24, -(40/yIncrement)*WT1);
+            yOffset = 0;
+            if (mass1 > mass2) yOffset = -30;
+            context.font = 'bold 16pt Calibri';
+            context.fillText("W", xBase2+185-13, yBase2 + yOffset + 10);
+            energyLabel = 'W   = ';
+            energyLabel = energyLabel + (WT1).toFixed(2) + ' J';
+            context.fillText(energyLabel, xBase2+420, yBase2 - 20);
+            context.font = 'bold 12pt Calibri';
+            context.fillText("T", xBase2+185-13+17, yBase2 +yOffset + 10 + 10);
+            context.fillText("T", xBase2+420+17, yBase2 -20 + 10);
+          }
+          if ((energyMode == 5)) {
+            context.beginPath();
+            context.fillRect(xBase2+170-12, yBase2, 24, (40/yIncrement)*WT1);
+            yOffset = 0;
+            context.font = 'bold 16pt Calibri';
+            context.fillText("W", xBase2+170-13, yBase2 + yOffset + 10);
+            energyLabel = 'W   = ';
+            energyLabel = energyLabel + (-WT1).toFixed(2) + ' J';
+            context.fillText(energyLabel, xBase2+420, yBase2 - 20);
+            context.font = 'bold 12pt Calibri';
+            context.fillText("T", xBase2+170-13+17, yBase2 +yOffset + 10 + 10);
+            context.fillText("T", xBase2+420+17, yBase2 -20 + 10);
+          }
+
+      }
+    }
+
+    function runMotion() {
+        drawMotion();
+        if (runFlag == 1) {
+          timer = window.setTimeout(runMotion, 1000/60);
+        }
+      }
+
+
+    function drawArrow(Fx,Fy,Px,Py, arrowColor) {
+           var theta = Math.atan2(Fy,Fx);
+           context.strokeStyle = arrowColor;
+           context.lineWidth = 4;
+           context.beginPath();
+           context.moveTo(Px, Py);
+           context.lineTo(Px+5.0*Fx, Py-5.0*Fy);
+           context.stroke();
+
+           context.lineWidth = 2;
+
+           var Fmag = Math.sqrt(Fx*Fx+Fy*Fy);
+           if (Fmag > 5) Fmag = 5;
+
+           context.fillStyle = arrowColor;
+           context.beginPath();
+           context.moveTo(Px+5.0*Fx-3*Fmag*Math.cos(theta+0.25*(Math.PI/2)),Py-5.0*Fy+3*Fmag*Math.sin(theta+0.25*(Math.PI/2)));
+           context.lineTo(Px+5.0*Fx,Py-5.0*Fy);
+           context.lineTo(Px+5.0*Fx-3*Fmag*Math.cos(theta-0.25*(Math.PI/2)),Py-5.0*Fy+3*Fmag*Math.sin(theta-0.25*(Math.PI/2)));
+
+           context.stroke();
+           context.fill();
+
+    }
+
+  </script>
+
+
+   <p><a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png"></a><br>This <span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/InteractiveResource" rel="dct:type">work</span> by <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">Andrew Duffy</span> is licensed under a <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.<br>This simulation can be found in the collection at <a xmlns:dct="http://purl.org/dc/terms/" href="http://physics.bu.edu/~duffy/classroom.html" rel="dct:source">http://physics.bu.edu/~duffy/classroom.html</a>.</p>
+
+    </body>
+</html>
