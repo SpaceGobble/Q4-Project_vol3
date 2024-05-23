@@ -161,8 +161,8 @@
         var cookie = document.cookie.split(";");
         cookie[1]= cookie[1].slice(9, cookie[1].length);
         cookie[2]= cookie[2].slice(9, cookie[2].length);
-        cookie[6]= cookie[6].slice(10, cookie[6].length);
-        cookie[7]= cookie[7].slice(10, cookie[7].length);
+        cookie[6]= cookie[5].slice(10, cookie[5].length);
+        cookie[7]= cookie[6].slice(10, cookie[6].length);
         if(cookie[1] == cookie[6]){
             if(cookie[2] == cookie[7]){
                 alert("You are now logged in");
