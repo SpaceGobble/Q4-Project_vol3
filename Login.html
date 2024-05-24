@@ -92,9 +92,6 @@
             align-items: center;
              justify-content: center;
             transform: scale(1.2,1.2);
-            position: relative;
-            top: 25vh;
-            left:50vh;
         }
         label, legend, p{
             color: #f1bfb4;
@@ -109,7 +106,24 @@
             color: white;
             text-decoration: none ;
         }
-
+	.paragraph1{
+            font-size: 2vh;
+            font-weight: bold;
+        }
+        .paragraph2{
+            font-size: 5vh;
+            font-weight: bold;
+            margin: 0;
+            padding: 0;
+        }
+        .paragraph3{
+            font-size: 3vh;
+        }
+	#userInfo{
+            color:white;
+            text-align: center;
+	    display: none;
+        }    
     </style>
   </head>
   <body>
@@ -127,11 +141,6 @@
                 <button onclick="register()" id="register" >Register</button>
             </nav>
         </header>
-        <p id="p1"></p>
-        <p id="p2"></p>
-        <p id="p3"></p>
-        <p id="p4"></p>
-        <p id="p5"></p>
         <form onsubmit="return checking()" id="form">
 
             <fieldset>
@@ -144,6 +153,15 @@
                 <input type = "reset" value = "Reset">
             </fieldset>
         </form>
+	<div id="userInfo">
+		<p class="paragraph1">LOGIN</p>
+	        <p class="paragraph2">User Info<p>
+	        <p class="paragraph3"	id="p1"></p>
+		<p class="paragraph3"	id="p2"></p>
+		<p class="paragraph3"	id="p3"></p>
+		<p class="paragraph3"	id="p4"></p>
+		<p class="paragraph3"	id="p5"></p>
+        </div>
     </div>
   </body>
   <script>
@@ -167,6 +185,7 @@
         if(cookie[4] == cookie[5]){
             if(cookie[2] == cookie[3]){
                 alert("You are now logged in");
+		document.getElementById("userInfo").style.display = "block";
                 document.getElementById("p1").innerHTML = cookie[7];
                 document.getElementById("p2").innerHTML = "Username=" + cookie[4];
                 document.getElementById("p3").innerHTML = cookie[1];
