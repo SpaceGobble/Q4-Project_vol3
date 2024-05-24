@@ -166,8 +166,8 @@
             <section>Explore Computational Physics</section>
             <p>Using computational methods to solve physical problems.</p>
             <div id="startToLearn">
-                <button id="started">Get Started</button>
-                <button id="more">Learn More</button>
+                <button onclick="register()" id="started">Get Started</button>
+                <button onclick="learn()" id="more">Learn More</button>
             </div>
 
         </div>
@@ -193,6 +193,9 @@
     }
     function register(){
         window.location.href = "register.html";
+    }
+    function learn(){
+	window.location.href = "LearnMore.html";
     }
   </script>
     
